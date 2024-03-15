@@ -1,0 +1,135 @@
+module Property :
+  sig
+    type 'a t = 'a -> bool
+    val always_true : 'a t
+    val always_false : 'a t
+  end
+module Generator :
+  sig
+    type 'a t
+    val next : 'a t -> 'a
+    val const : 'a -> 'a t
+    val bool : float -> bool t
+    val int : int -> int -> int t
+    val int_nonneg : int -> int t
+    val float : float -> float -> float t
+    val float_nonneg : float -> float t
+    val char : char t
+    val alphanum : char t
+    val string : int -> char t -> string t
+    val list : int -> 'a t -> 'a list t
+    val combine : 'a t -> 'b t -> ('a * 'b) t
+    val map : ('a -> 'b) -> 'a t -> 'b t
+    val filter : ('a -> bool) -> 'a t -> 'a t
+    val partitioned_map :
+      ('a -> bool) -> ('a -> 'b) * ('a -> 'b) -> 'a t -> 'b t
+  end
+module Reduction :
+  sig
+    type 'a t = 'a -> 'a list
+    val empty : 'a t
+    val int : int t
+    val int_nonneg : int t
+    val float : float t
+    val float_nonneg : float t
+    val char : char t
+    val alphanum : char t
+    val string : char t -> string t
+    val list : 'a t -> 'a list t
+    val combine : 'a t -> 'b t -> ('a * 'b) t
+    val filter : ('a -> bool) -> 'a t -> 'a t
+  end
+module Test :
+  sig
+    type 'a t
+    val make_test :
+      'a Generator.t -> 'a Reduction.t -> string -> 'a Property.t -> 'a t
+    val check : int -> 'a t -> bool
+    val fails_at : int -> 'a t -> 'a option
+    val execute : int -> 'a t list -> ('a t * 'a option) list
+  end
+val gen_intcouple : (int * int) Generator.t = <abstr>
+val red_intcouple : (int * int) Reduction.t = <fun>
+val test_intcouple : string -> (int * int) Property.t -> (int * int) Test.t =
+  <fun>
+val test_quorem : (int * int) Test.t = <abstr>
+val test_quorem_wrong : (int * int) Test.t = <abstr>
+- : bool = true
+- : bool = false
+- : (int * int) option = None
+- : (int * int) option = Some (1, 2)
+- : ((int * int) Test.t * (int * int) option) list =
+[(<abstr>, None); (<abstr>, Some (1, 2))]
+val gen_intlistcouple : (int list * int list) Generator.t = <abstr>
+val red_intlistcouple : (int list * int list) Reduction.t = <fun>
+val test_intlistcouple :
+  string -> (int list * int list) Property.t -> (int list * int list) Test.t =
+  <fun>
+val test_append : (int list * int list) Test.t = <abstr>
+val test_append_wrong : (int list * int list) Test.t = <abstr>
+- : bool = true
+- : bool = false
+- : (int list * int list) option = None
+- : (int list * int list) option = Some ([], [2])
+- : ((int list * int list) Test.t * (int list * int list) option) list =
+[(<abstr>, None); (<abstr>, Some ([], [5; 4; 3; 2; 1]))]
+val find_last : 'a list -> 'a option = <fun>
+val find_last_true : int list -> int option = <fun>
+val find_last_wrong : 'a list -> 'a option = <fun>
+val gen_intlist : int list Generator.t = <abstr>
+val red_intlist : int list Reduction.t = <fun>
+val test_intlist : string -> int list Property.t -> int list Test.t = <fun>
+val test_sum : int list Test.t = <abstr>
+val test_sum_wrong : int list Test.t = <abstr>
+- : bool = true
+- : bool = false
+- : int list option = None
+- : int list option = Some [4]
+- : (int list Test.t * int list option) list =
+[(<abstr>, None); (<abstr>, Some [7])]
+val gen_stringcouple : (string * string) Generator.t = <abstr>
+val red_stringcouple : (string * string) Reduction.t = <fun>
+val test_stringcouple :
+  string -> (string * string) Property.t -> (string * string) Test.t = <fun>
+val test_concat_length : (string * string) Test.t = <abstr>
+val test_concat_length_wrong : (string * string) Test.t = <abstr>
+- : bool = true
+- : bool = false
+- : (string * string) option = None
+- : (string * string) option = Some ("", "+")
+- : ((string * string) Test.t * (string * string) option) list =
+[(<abstr>, None); (<abstr>, Some ("", "p"))]
+val test_concat : (string * string) Test.t = <abstr>
+val test_concat_wrong : (string * string) Test.t = <abstr>
+- : bool = true
+- : bool = false
+- : (string * string) option = None
+- : (string * string) option = Some ("k", "7")
+- : ((string * string) Test.t * (string * string) option) list =
+[(<abstr>, None); (<abstr>, Some ("c", "h"))]
+val puiss_rapide : int -> float -> float = <fun>
+val puiss_rapide_wrong : int -> float -> float = <fun>
+val gen_floatcouple : (float * int) Generator.t = <abstr>
+val red_floatcouple : (float * int) Reduction.t = <fun>
+val test_floatcouple :
+  string -> (float * int) Property.t -> (float * int) Test.t = <fun>
+val test_pow : (float * int) Test.t = <abstr>
+val test_pow_wrong : (float * int) Test.t = <abstr>
+- : bool = true
+- : bool = false
+- : (float * int) option = None
+- : (float * int) option = Some (0., 1)
+- : ((float * int) Test.t * (float * int) option) list =
+[(<abstr>, None); (<abstr>, Some (0., 1))]
+val gen_intlist : int list Generator.t = <abstr>
+val red_intlist : int list Reduction.t = <fun>
+val test_intlistcouple : string -> int list Property.t -> int list Test.t =
+  <fun>
+val test_length : int list Test.t = <abstr>
+val test_length_wrong : int list Test.t = <abstr>
+- : bool = true
+- : bool = false
+- : int list option = None
+- : int list option = Some [7; 6; 5; 4; 3; 2]
+- : (int list Test.t * int list option) list =
+[(<abstr>, None); (<abstr>, Some [9; 8; 7; 6; 5; 4])]
